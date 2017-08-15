@@ -19,7 +19,16 @@ type Services struct {
 
 
 func main() {
-	data , err := ioutil.ReadFile("docker-compose-dev.yml")
+	var filename string
+	if len(os.Args) > 1 {
+		filename = os.Args[1]
+	}
+
+	if filename == "" {
+		filename = "docker-compose-dev.yml"
+	}
+
+	data , err := ioutil.ReadFile(filename)
 	if err != nil {
 		log.Fatalf("error: %v", err)
 	}
@@ -31,17 +40,16 @@ func main() {
 		log.Fatalf("error: %v", err)
 	}
 
-	filename := "images.txt"
-	f, err :=os.OpenFile(filename, os.O_WRONLY|os.O_CREATE, 0666)
+	outputfilename := "images.txt"
+	f, err :=os.OpenFile(outputfilename, os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
 		panic(err)
 	}
 
 	defer f.Close()
 
-	for k ,_ := range c.Service {
+	for k := range c.Service {
 		fmt.Println(k)
 		fmt.Fprintln(f,c.Service[k].Image)
 	}
-	//fmt.Println(c.Service["api-central"].Image)
 }
