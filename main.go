@@ -19,13 +19,14 @@ type Services struct {
 
 
 func main() {
+	var tempFolder = "/tmp"
 	var filename string
 	if len(os.Args) > 1 {
 		filename = os.Args[1]
 	}
 
 	if filename == "" {
-		filename = "docker-compose-dev.yml"
+		filename = tempFolder + "/docker-compose-dev.yml"
 	}
 
 	data , err := ioutil.ReadFile(filename)
@@ -40,8 +41,8 @@ func main() {
 		log.Fatalf("error: %v", err)
 	}
 
-	outputfilename := "images.txt"
-	f, err :=os.OpenFile(outputfilename, os.O_WRONLY|os.O_CREATE, 0666)
+	outputFilename := tempFolder + "/images.txt"
+	f, err :=os.OpenFile(outputFilename, os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
 		panic(err)
 	}
@@ -49,7 +50,8 @@ func main() {
 	defer f.Close()
 
 	for k := range c.Service {
-		fmt.Println(k)
 		fmt.Fprintln(f,c.Service[k].Image)
 	}
+
+	log.Println("Successfully generated images file")
 }
